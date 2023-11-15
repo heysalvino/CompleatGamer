@@ -1,61 +1,41 @@
-# Estimate the value of winning the "Pass" bet in Craps using the Monte Carlo simulation
-
 from random import randint
 
-# Function to generate random roll
 def roll():
-  dice_one = randint(1,6)
-  dice_two = randint(1,6)
-  return dice_one + dice_two
-  
-def main():
+    """Return the sum of two randomly rolled six-sided dice."""
+    return randint(1, 6) + randint(1, 6)
 
-  '''
-     Main method to estimate winning the "Pass" bet in Craps
-     inputs:none
-     output: print the estimate
-  '''
-  
-  # Parameters
-  num_iterations = 1000000
-  
-  # State variables
-  num_wins = 0
-  
-  # Loop over all simulated trials
-  for iteration in range(num_iterations):
-      come_out = roll()
-      if come_out == 7 or come_out == 11:
-        num_wins += 1
-      elif come_out == 2 or come_out == 3 or come_out == 12:
-         continue
-        
-      else:
-        point = come_out
-        while True: 
-          result = roll()
-          if result == point:
-            num_wins += 1
-            break
-          if result == 7:
-            break
-          
-          
-  # Post trial calculations
-  estimate = float(num_wins)/ float(num_iterations) * 100
-  print " Your chance of winning the bet is %.2f percent." % (estimate)
-  
-  # Run main if the script is run from the terminal 
+def simulate_craps(num_iterations):
+    """
+    Simulate num_iterations rounds of Craps to estimate the winning probability of a Pass bet.
+    
+    :param num_iterations: Number of iterations to simulate
+    :return: Estimated winning probability
+    """
+    WINNING_NUMBERS = {7, 11}
+    LOSING_NUMBERS = {2, 3, 12}
+
+    wins = sum(1 for _ in range(num_iterations) if simulate_round(WINNING_NUMBERS, LOSING_NUMBERS))
+    return wins / num_iterations * 100
+
+def simulate_round(WINNING_NUMBERS, LOSING_NUMBERS):
+    come_out_roll = roll()
+    if come_out_roll in WINNING_NUMBERS:
+        return True
+    if come_out_roll in LOSING_NUMBERS:
+        return False
+
+    point = come_out_roll
+    while True:
+        roll_result = roll()
+        if roll_result == point:
+            return True
+        if roll_result == 7:
+            return False
+
+def main():
+    num_iterations = 1000000
+    win_probability = simulate_craps(num_iterations)
+    print(f"Your chance of winning the bet is {win_probability:.2f} percent.")
+
 if __name__ == '__main__':
     main()
-        
-        
-        
-        
-        
-        
-        
-        
-        
-        
-        
